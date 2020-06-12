@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.6
 
 from argparse import ArgumentParser
 import csv
@@ -18,9 +18,9 @@ def wait_for_units(ser):
 
     """
     while True:
-        data_re = re.search("(\([a-zA-Z]*\))", str(ser.readline()))
+        data_re = re.search("\(([a-zA-Z]*)\)", str(ser.readline()))
         if data_re is not None:
-            return data_re.group(0)
+            return data_re.group(1)
 
 
 def capture_data(port, file, dur=0, baud=9600, display=False):
@@ -40,6 +40,7 @@ def capture_data(port, file, dur=0, baud=9600, display=False):
     with open(file, mode='w') as io_obj:
         writer = csv.writer(
             io_obj, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(["Time (s)", f"Units ({units})"])
         while True:
             data_re = re.search("([0-9.-]+) ([0-9.-]+)", str(ser.readline()))
             if data_re is not None:
